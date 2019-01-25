@@ -97,9 +97,9 @@ void MainWindow::on_pushButton_ToPAE_clicked()
     qDebug()<<"fai   lanmuda   H";
     qDebug()<<QString::number(fai,'f',6)<<QString::number(lanmuda,'f',6)<<QString::number(H,'f',6);
 
-//    double P = ui->doubleSpinBox_r->value();  //距离
-//    double A = ui->doubleSpinBox_a->value();  //方位
-//    double E = ui->doubleSpinBox_e->value();  //俯仰
+    double P ;  //距离
+    double A ;  //方位
+    double E ;  //俯仰
 //    A = A/180.0*pi;
 //    E = E/180.0*pi;
 
@@ -112,7 +112,7 @@ void MainWindow::on_pushButton_ToPAE_clicked()
     digu_M(2,0) = (N*(1.0-ec_2)+H)*sin(fai);
 
     qDebug()<<digu_M(0,0)<<endl<<digu_M(1,0)<<endl<<digu_M(2,0)<<endl;
-//    Vector3d station_M; //测站测量量，A，E在测站直角坐标中的分量
+    Vector3d station_M; //测站测量量，A，E在测站直角坐标中的分量
 //    station_M(0,0) = P*sin(A)*cos(E);
 //    station_M(1,0) = P*cos(A)*cos(E);
 //    station_M(2,0) = P*sin(E);
@@ -134,16 +134,23 @@ void MainWindow::on_pushButton_ToPAE_clicked()
     Vector3d xyz_M ;
     xyz_M(0,0) = ui->doubleSpinBox_x->value();
     xyz_M(1,0) = ui->doubleSpinBox_y->value();
-    xyz_M(2,0)
+    xyz_M(2,0) = ui->doubleSpinBox_z->value();
+
+    station_M = M.transpose()*(xyz_M - digu_M);
+
+    P = sqrt(station_M(0,0)*station_M(0,0)+station_M(1,0)*station_M(1,0)+station_M(2,0)*station_M(2,0));
+
+    E = (180.0/pi) *( asin(station_M(2,0)/P) );
+
+    A = (180.0/pi) *( atan(station_M(0,0)/station_M(1,0)) );
     //xyz_M = M*station_M + digu_M ;
 
-//    ui->doubleSpinBox_x->setValue(xyz_M(0,0));
-//    ui->doubleSpinBox_y->setValue(xyz_M(1,0));
-//    ui->doubleSpinBox_z->setValue(xyz_M(2,0));
-//    qDebug()<<"cal::  "<<QString::number(xyz_M(0,0),'f',6)
-//           <<QString::number(xyz_M(1,0),'f',6)
-//           <<QString::number(xyz_M(2,0),'f',6)
-//          <<QString::number(P,'f',6)
-//         <<QString::number(N,'f',6);
+    ui->doubleSpinBox_r->setValue(P);
+    ui->doubleSpinBox_a->setValue(A);
+    ui->doubleSpinBox_e->setValue(E);
+    qDebug()<<"station P A E::  "<<QString::number(P,'f',6)
+           <<QString::number(A,'f',6)
+           <<QString::number(E,'f',6);
+
 
 }
